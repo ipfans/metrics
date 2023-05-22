@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"bytes"
+	"compress/gzip"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -9,8 +10,6 @@ import (
 	"net/http"
 	"net/url"
 	"time"
-
-	"compress/gzip"
 )
 
 // InitPushProcessMetrics sets up periodic push for 'process_*' metrics to the given pushURL with the given interval.
@@ -75,6 +74,12 @@ func (s *Set) InitPush(pushURL string, interval time.Duration, extraLabels strin
 	return InitPushExt(pushURL, interval, extraLabels, writeMetrics)
 }
 
+var InitClient = func(interval time.Duration) *http.Client {
+	return &http.Client{
+		Timeout: interval,
+	}
+}
+
 // InitPushExt sets up periodic push for metrics obtained by calling writeMetrics with the given interval.
 //
 // extraLabels may contain comma-separated list of `label="value"` labels, which will be added
@@ -109,9 +114,7 @@ func InitPushExt(pushURL string, interval time.Duration, extraLabels string, wri
 		return fmt.Errorf("missing host in pushURL=%q", pushURL)
 	}
 	pushURLRedacted := pu.Redacted()
-	c := &http.Client{
-		Timeout: interval,
-	}
+	c := InitClient(interval)
 	pushesTotal := pushMetrics.GetOrCreateCounter(fmt.Sprintf(`metrics_push_total{url=%q}`, pushURLRedacted))
 	pushErrorsTotal := pushMetrics.GetOrCreateCounter(fmt.Sprintf(`metrics_push_errors_total{url=%q}`, pushURLRedacted))
 	bytesPushedTotal := pushMetrics.GetOrCreateCounter(fmt.Sprintf(`metrics_push_bytes_pushed_total{url=%q}`, pushURLRedacted))

@@ -3,7 +3,8 @@ package metrics_test
 import (
 	"bytes"
 	"fmt"
-	"github.com/VictoriaMetrics/metrics"
+
+	"github.com/ipfans/metrics"
 )
 
 func ExampleSet() {

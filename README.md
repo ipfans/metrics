@@ -6,6 +6,7 @@
 
 # metrics - lightweight package for exporting metrics in Prometheus format
 
+**!!!THIS IS A FORKED VERSION OF [`VictoriaMetrics/metrics`](https://github.com/VictoriaMetrics/metrics)!!!**
 
 ### Features
 
@@ -29,7 +30,7 @@
 ### Usage
 
 ```go
-import "github.com/VictoriaMetrics/metrics"
+import "github.com/ipfans/metrics"
 
 // Register various metrics.
 // Metric name may contain labels in Prometheus format - see below.
